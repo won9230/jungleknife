@@ -5,8 +5,27 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="/static/output.css" rel="stylesheet">
         <title>정글에서 나침반 빌리기</title>
-      </head>
-      <body>
+        <script src="../node_modules/flowbite/dist/flowbite.min.js"></script>
+    </head>
+    <body>
+        <div id = "reserveModal" tabindex="-1" aria-hidden="true"  class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full">
+            <div class="relative w-full h-full max-w-xl md:h-auto">
+                <div class = "w-full h-full p-5 bg-white rounded-lg">
+                    <div class ="flex flex-col justify-start items-start">
+                        <div class ="font-bold mt-5">
+                            예약시간: <span>2023-01-03 12시</span>
+                        </div>
+                        <div class ="font-bold mt-5">
+                            예약장소: <span>place</span>
+                        </div>
+                        <div class ="font-bold my-5">
+                            대여자: <span>person</span>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
           <div class= "w-full flex justify-around items-center p-4 border-b-2">
               <button class="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
                    MyPage
@@ -18,24 +37,24 @@
               </div>
               <button class ="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
                   등록
-              </button>
-          </div>
-          <div class="flex flex-wrap justify-around items-center p-4">
-            <div class="flex flex-col justify-center items-center w-[650px]">
-                <div class="font-bold text-3xl mt-5">
-                    빌린 나침반
-                </div>
-                <div class="flex flex-col justify-center items-center">
-                    <div class="bg-gray-200 w-[650px] mx-5 mt-5 p-3 rounded-lg">
-                        <div class="flex justify-start items-center p-4">
-                            <div class = "font-bold mx-3">대여물품:</div>
-                            <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">물걸레</div>
-                            <div class = "font-bold mx-3">이름:</div>
-                        <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">홍윤표</div>
+                </button>
+            </div>
+            <div class="flex flex-wrap justify-around items-center p-4">
+                <div class="flex flex-col justify-center items-center w-[650px]">
+                    <div class="font-bold text-3xl mt-5">
+                        빌린 나침반
                     </div>
-                    <div class="flex justify-start items-center p-4">
-                        <div class = "font-bold mx-3">대여기간:</div>
-                        <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">2023.04.03 13:00 ~ 2023.04.03 15:00</div>
+                    <div class="flex flex-col justify-center items-center">
+                        <div class="bg-gray-200 w-[650px] mx-5 mt-5 p-3 rounded-lg">
+                            <div class="flex justify-start items-center p-4">
+                                <div class = "font-bold mx-3">대여물품:</div>
+                                <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">물걸레</div>
+                                <div class = "font-bold mx-3">이름:</div>
+                                <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">홍윤표</div>
+                            </div>
+                            <div class="flex justify-start items-center p-4">
+                                <div class = "font-bold mx-3">대여기간:</div>
+                                <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">2023.04.03 13:00 ~ 2023.04.03 15:00</div>
                         
                     </div>
                     
@@ -44,7 +63,7 @@
                         <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">제가 재밌게놀면서 쓰고 싶습니다</div>
                     </div>
                     <div class="flex justify-between">
-                        <div class="text-gray-500 ml-2 font-bold">예약정보</div>
+                        <button data-modal-target="reserveModal" data-modal-toggle="reserveModal" class="text-gray-500 ml-2 font-bold">예약정보</button>
                         <div class="flex justify-end">
                             <div class="text-red-500 mr-2 font-bold">
                                 취소
@@ -55,7 +74,7 @@
                         </div>
                     </div>
                     <div>
-                        
+
                     </div>
                 </div>
             </div>
@@ -64,6 +83,6 @@
                     빌려준 나침반
                 </div>
             </div>
-          </div>
+        </div>
 </body>
 </html>
