@@ -1,11 +1,20 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="/static/output.css" rel="stylesheet">
-  <title>정글에서 나침반 빌리기</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/output.css" rel="stylesheet">
+    <title>정글에서 나침반 빌리기</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        function logout() {
+            window.location.href = '/';
+        }
+
+    </script>
 </head>
+
 <body>
     <div class= "w-full flex justify-around items-center p-4 border-b-2">
         <button class="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
@@ -16,9 +25,15 @@
                 정글에서 <span class ="text-green-400">나침반</span> 빌리기
             </h1>
         </div>
-        <button class ="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
-            등록
-        </button>
+
+        <div>
+            <button class ="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
+                등록
+            </button>
+            <button onclick="logout();" class ="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
+                로그아웃
+            </button>
+        </div>
     </div>
     {% extends 'crad.html'%}
     
