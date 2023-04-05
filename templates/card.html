@@ -14,11 +14,11 @@
                 <div class = "font-bold mx-3">대여물품:</div>
                 <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">{{i['product']}}</div>
                 <div class = "font-bold mx-3">이름:</div>
-                <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">{{i['time_start']}}</div>
+                <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg"></div>
             </div>
             <div class="flex justify-start items-center p-4">
                 <div class = "font-bold mx-3">대여기간:</div>
-                <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">{{i['time_finish']}}</div>
+                <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">{{i['time_start'][:10]}} {{i['time_start'][10:]}}:00 ~ {{i['time_finish'][:10]}} {{i['time_finish'][10:]}}:00</div>
             </div>
         
             <div class="flex justify-start items-center p-4">

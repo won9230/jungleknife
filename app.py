@@ -40,8 +40,7 @@ def show_main():
 ################## 메인페이지에 등록 카드 생성 및 갱신 ################
     _all_register = db.register.find().sort('time_finish',-1)
     all_register = list(_all_register)
-    for i in all_register:
-        print(i['time_finish'])
+
     return render_template('main.html', user_id=user_id, all_register = all_register)
 
 ## 회원가입 페이지로 이동
@@ -129,6 +128,15 @@ def rental_Registration():
     db.register.insert_one({'product' : product, 'time_start' : time_start,'time_finish' : time_finish,'purpose_Rental' : purpose_Rental})
     return jsonify({'result' : 'success'})
 
+@app.route('/main',methods=['POST'])
+def rental_Registration1():
+    input_data = request.form
+    product = input_data['product_give']
+    time_start = input_data['time_start_give']
+    time_finish = input_data['time_finish_give']
+    purpose_Rental = input_data['purpose_Rental_give']
+    db.register.insert_one({'product' : product,'time_start' : time_start,'time_finish' : time_finish,'purpose_Rental' :purpose_Rental})
+    return jsonify({'result' : 'success'})
 
 if __name__ == '__main__':  
    app.run('0.0.0.0', port=5000, debug=True)
