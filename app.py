@@ -1,5 +1,8 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for
+from apscheduler.schedulers.background import BackgroundScheduler
 import bcrypt
+import time
+from datetime import datetime
 from flask_jwt_extended import *
 from datetime import datetime, timedelta
 from flask_jwt_extended.config import config
@@ -177,6 +180,28 @@ def register_user():
     ## 데이터베이스 등록
     db.users.insert_one({'id': user_id, 'pw': byted_pw, 'name': user_name})
     return jsonify({'result': 'success', 'msg': 'Join Success!'})
+
+def delete():
+    print("삭제 중")
+    registers = list(db.register.find())
+    for reg in registers:
+        startTime = reg['time_start']
+        startDate = datetime.strptime(startTime[:10], "%Y-%m-%d").date()
+        
+        startHour = int(startTime[9:])
+        
+
+        if startDate < datetime.now().date():
+            db.register.delete_many({'time_start': startTime})
+        elif startDate == datetime.now().date():
+            if startHour <= datetime.now().hour:
+                db.register.delete_many({'time_start': startTime})
+                
+        
+        
+schdule = BackgroundScheduler(daemon =True, timezone ='Asia/Seoul')
+schdule.add_job(delete, 'interval', hours=1)
+schdule.start()
 
 
 if __name__ == '__main__':  

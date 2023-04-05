@@ -81,6 +81,11 @@
                 alert('종료시간이 시작시간보다 빠름니다.');
                 return;
             }
+            if(time_start2 > 23 || time_start2 < 0 || time_finish2 > 23 || time_finish2 < 0  )
+            {
+                alert('시각을 입력해주세요.');
+                return;
+            }
 
             $.ajax({
                 type: "POST", // POST 방식으로 요청
@@ -137,7 +142,7 @@
                         시작 시간:
                         </div>
                         <input id = "time_start1" class="w-32 ml-5 p-2 bg-gray-100" type="date">
-                        <input id = "time_start2" class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23">
+                        <input id = "time_start2" class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23" step="1">
                     </div>
                     
                     <div class="flex justify-start items-center mt-10">
@@ -145,7 +150,7 @@
                             종료 시간:
                         </div>
                         <input id = "time_finish1" class="w-32 ml-5 p-2 bg-gray-100" type="date">
-                        <input id = "time_finish2"  class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23">
+                        <input id = "time_finish2"  class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23" step="1">
                         </div>
                     <div class="flex justify-start items-center mt-10">
                         <div class="font-bold w-20" >대여목적: </div>
@@ -180,7 +185,7 @@
     </div>
     <!--navBar end-->
     <!--main start-->
-    <div class="flex flex-wrap justify-center items-center">
+    <div class="flex flex-wrap justify-center items-center overflow-auto">
         {% extends 'card.html' %}
     </div>
 
