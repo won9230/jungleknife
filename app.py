@@ -7,6 +7,7 @@ from jwt.exceptions import ExpiredSignatureError
 
 from Config import *
 
+from bson.objectid import ObjectId
 from pymongo import MongoClient
 client = MongoClient('localhost', 27017)
 db = client.jungleknife
@@ -26,13 +27,20 @@ jwt_blocklist = set()
 ######################
 @app.route('/')
 def home():
+    jti = "none"
     jwt_token = request.cookies.get('access_token')
     if jwt_token is None:
         # 일반적인 로그인
         return render_template('login.html'), 200
     
-    jti = decode_token(jwt_token)['jti']
-    if jti in jwt_blocklist:
+    try:
+        jti = decode_token(jwt_token)['jti']
+    except ExpiredSignatureError:
+        # 쿠키 시간 만료의 경우, 로그인 페이지로
+        print("쿠키 만료")
+    
+    logoutCheck = jti in jwt_blocklist
+    if jti == "none" or logoutCheck:
         # 쿠키를 발급받았지만 로그아웃 후 다시 로그인할 때
         return render_template('login.html'), 200
     
@@ -60,38 +68,18 @@ def show_main():
     if logoutCheck:
         return redirect(LOCALHOST+'/'), 400
     ################## 메인페이지에 등록 카드 생성 및 갱신 ################
-    _all_register = db.register.find().sort('time_finish', -1)
+    _all_register = db.register.find().sort('time_finish', 1)
     all_register = list(_all_register)
 
     return render_template('main.html', user_id=user_id, all_register=all_register)
 
-## 물품등록
-@app.route('/main',methods=['POST'])
-def rental_Registration():
-    jwt_token = request.cookies.get('access_token')
-    if jwt_token is None:
-        return redirect(LOCALHOST+'/'), 400
-    
-    try:
-        user_id = decode_token(jwt_token).get(IDENTITY, None)
-    except ExpiredSignatureError:
-        # 쿠키 시간 만료의 경우, 로그인 페이지로
-        return redirect(LOCALHOST+'/'), 400
-    
-    input_data = request.form
-    product = input_data['product_give']
-    time_start = input_data['time_start_give']
-    time_finish = input_data['time_finish_give']
-    purpose_Rental = input_data['purpose_Rental_give']
-    
-    rent_user = db.users.find_one({'id': user_id})['name']
-    
-    db.register.insert_one({'product' : product,'rent_user':rent_user, 'time_start' : time_start,'time_finish' : time_finish,'purpose_Rental' :purpose_Rental, 'reserve_time': '', 'reserve_place': '', 'reserve_user': '', 'product_status': '구하는 중'})
-    return jsonify({'result' : 'success'})
 
 @app.route("/main/<user_id>")
 def show_mypage(user_id):
     return render_template("mypage.html", user_id)
+
+
+    
 
 ## 회원가입 페이지로 이동
 @app.route("/join")
@@ -178,6 +166,63 @@ def register_user():
     db.users.insert_one({'id': user_id, 'pw': byted_pw, 'name': user_name})
     return jsonify({'result': 'success', 'msg': 'Join Success!'})
 
+
+## 물품등록
+@app.route('/main',methods=['POST'])
+def rental_Registration():
+    jwt_token = request.cookies.get('access_token')
+    if jwt_token is None:
+        return redirect(LOCALHOST+'/'), 400
+    
+    try:
+        user_id = decode_token(jwt_token).get(IDENTITY, None)
+    except ExpiredSignatureError:
+        # 쿠키 시간 만료의 경우, 로그인 페이지로
+        return redirect(LOCALHOST+'/'), 400
+    
+    input_data = request.form
+    product = input_data['product_give']
+    time_start = input_data['time_start_give']
+    time_finish = input_data['time_finish_give']
+    purpose_Rental = input_data['purpose_Rental_give']
+    
+    rent_user = db.users.find_one({'id': user_id})['name']
+    
+    db.register.insert_one({'product' : product,'rent_user':rent_user, 'time_start' : time_start,'time_finish' : time_finish,'purpose_Rental' :purpose_Rental, 'reserve_time': '', 'reserve_place': '', 'reserve_user': '', 'product_status': '구하는 중'})
+    return jsonify({'result' : 'success', 'msg': '물품 등록 성공'})
+
+
+## 빌려주기 예약
+@app.route("/reservation", methods=['POST'])
+def make_reservation():
+    jwt_token = request.cookies.get('access_token')
+    if jwt_token is None:
+        return redirect(LOCALHOST+'/'), 400
+    
+    try:
+        user_id = decode_token(jwt_token).get(IDENTITY, None)
+    except ExpiredSignatureError:
+        # 쿠키 시간 만료의 경우, 로그인 페이지로
+        return redirect(LOCALHOST+'/'), 400
+    
+    input_data = request.form
+    transaction_id = input_data['transaction_id']
+    reserve_place = input_data['reserve_place']
+    reserve_date = input_data['reserve_date']
+    reserve_hour = input_data['reserve_hour']
+    
+    reserve_user = db.users.find_one({'id': user_id})['name']
+    
+    db.register.update_one({'_id': ObjectId(transaction_id)}, {'$set': {
+                                                                'reserve_user': reserve_user,
+                                                                'reserve_place': reserve_place,
+                                                                'reserve_time': reserve_date+reserve_hour,
+                                                                'product_status': '예약 중'
+                                                            }
+                                                    })
+    
+    return jsonify({'result' : 'success', 'msg': '예약 성공'})
+    
 
 if __name__ == '__main__':  
    app.run('0.0.0.0', port=PORT, debug=True)

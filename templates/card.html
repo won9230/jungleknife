@@ -1,13 +1,48 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="/static/output.css" rel="stylesheet">
-  <title>정글에서 나침반 빌리기</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/output.css" rel="stylesheet">
+    <title>정글에서 나침반 빌리기</title>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <script>
+        function reservation() {
+            let transaction_id = $("#transaction_id").text();
+            let reserve_place = $("#reserve_place").val();
+            let reserve_date = $("#reserve_date").val();
+            let reserve_hour = $("#reserve_hour").val();
+
+            if (reserve_place == '' || reserve_date == '' || reserve_hour == '') {
+                alert("빈칸을 채워주세요.");
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/reservation",
+                data: {
+                    transaction_id: transaction_id,
+                    reserve_place: reserve_place,
+                    reserve_date: reserve_date,
+                    reserve_hour: reserve_hour
+                },
+                success: function (res) { 
+                    if (res["result"] == "success") {
+                        alert("예약되었습니다");
+                        window.location.reload();
+                    } else {
+                        alert("서버 오류!");
+                    }
+                }
+            });
+        }
+    </script>
 </head>
 <body>
-    {%block crad%}
+    {%block card%}
         {%for i in all_register
             if i['product_status'] == '구하는 중'%}
         <!--rentModal start-->
@@ -25,6 +60,7 @@
                 <div class ="flex flex-col justify-center items-center">
                     <div class = "flex flex-col justify-center items-center px-5 bg-gray-200 rounded-lg">
                         <div class = "flex justify-start items-start mt-5">
+                            <div id="transaction_id" style="display:none">{{i['_id']}}</div>
                             <div class = "font-bold mr-4">
                                 대여자: <span>{{i['rent_user']}}</span>
                             </div>
@@ -41,18 +77,18 @@
                     <form>
                     <div class="flex justify-start items-center mt-5">
                         <div class="font-bold w-20">대여장소: </div>
-                        <input class="w-52 ml-5 p-2 bg-gray-100">
+                        <input id="reserve_place"class="w-52 ml-5 p-2 bg-gray-100">
                     </div>
                     
                     <div class="flex justify-start items-center  mt-10">
                         <div class="font-bold w-20">
                         대여 시간:
                         </div>
-                        <input class="w-32 ml-5 p-2 bg-gray-100" type="date">
-                        <input class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23">
+                        <input id="reserve_date" class="w-32 ml-5 p-2 bg-gray-100" type="date">
+                        <input id="reserve_hour" class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23">
                     </div>
                     </form>
-                    <button class="font-bold bg-green-400 text-white mx-auto my-10 h-10 w-80 block rounded-lg hover:opacity-80">빌려주기</button>
+                    <button onclick="reservation();"class="font-bold bg-green-400 text-white mx-auto my-10 h-10 w-80 block rounded-lg hover:opacity-80">빌려주기</button>
                     </div>
                 </div>
             </div>
