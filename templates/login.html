@@ -10,6 +10,13 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
     
     <script>
+        function createCookie(value) {
+            var now = new Date();
+            var expirationDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7, 0, 0, 0);
+        
+            document.cookie = 'token=' + value + '; expires=' + expirationDate + '; path=/';
+        };
+
         function checkUser() {
             let user_id = $("#user_id").val();
             let user_pw = $("#user_pw").val();
@@ -26,44 +33,46 @@
                 success: function(res) {
                     console.log(res);
                     if (res['result'] == 'success') {
-                        alert();
-                        $.cookie('mytoken', res['access_token'], {path: '/'});
+                        alert('안녕하세요, ' + res['user_id'] + '님!');
+                        //document.cookie = res['access_token'];
+                        
+                        $.cookie('access_token', res['access_token'], {path: '/'});
                         //alert(res['msg']);
                         window.location.href = '/main'
                     } else {
                         alert(res['msg']);
                     }
                 }
-            });
-        }
-        
-        function showJoin() {
-            window.location.href = '/join';
-        }
-    </script>
-</head>
+                });
+            }
+            
+            function showJoin() {
+                window.location.href = '/join';
+            }
+        </script>
+    </head>
 
-<body class = "mt-20">
-        <div class= "flex justify-center items-center">
-          <h1 class="text-5xl font-bold">
-        정글에서 <span class ="text-green-400">나침반</span> 빌리기
-        </h1>
-        
-    </div>
-    <div action="">
-        <div class ="flex justify-center items-center mt-10">
-            <div class= "flex flex-col mt-5 px-5 rounded-lg bg-gray-200">
+    <body class = "mt-20">
+            <div class= "flex justify-center items-center">
+            <h1 class="text-5xl font-bold">
+            정글에서 <span class ="text-green-400">나침반</span> 빌리기
+            </h1>
+            
+        </div>
+        <div action="">
+            <div class ="flex justify-center items-center mt-10">
+                <div class= "flex flex-col mt-5 px-5 rounded-lg bg-gray-200">
 
-                <input id="user_id" class="border-2 m-10 w-96 h-12 p-5 block outline-none rounded-lg" type ="id"placeholder="아이디">
-                <input id="user_pw" class="border-2 m-10 mt-0 w-96 h-12 p-5 block outline-none rounded-lg" type ="password"placeholder="비밀번호">
-                
-                <button onclick="checkUser();" class="w-96 h-12 bg-green-400 text-white m-10 mt-0 text-lg rounded-lg focus:outline-none hover:opacity-80">로그인
-                </button>
+                    <input id="user_id" class="border-2 m-10 w-96 h-12 p-5 block outline-none rounded-lg" type ="id"placeholder="아이디">
+                    <input id="user_pw" class="border-2 m-10 mt-0 w-96 h-12 p-5 block outline-none rounded-lg" type ="password"placeholder="비밀번호">
+                    
+                    <button onclick="checkUser();" class="w-96 h-12 bg-green-400 text-white m-10 mt-0 text-lg rounded-lg focus:outline-none hover:opacity-80">로그인
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="flex justify-center items-center mt-5"><a onclick="showJoin();" class="text-gray-400">
-        회원가입
-    </a></div>
+        <div class="flex justify-center items-center mt-5"><a onclick="showJoin();" class="text-gray-400">
+            회원가입
+        </a></div>
     </body>
 </html>

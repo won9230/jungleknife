@@ -1,75 +1,75 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/static/output.css" rel="stylesheet">
-    <title>정글에서 나침반 빌리기</title>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="/static/output.css" rel="stylesheet">
+        <title>정글에서 나침반 빌리기</title>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script>
-        function registerUser() {
-            let user_id = $("#user_id").val();
-            let user_pw = $("#user_pw").val();
-            let user_pw2 = $("#user_pw2").val();
-            let user_name = $("#user_name").val();
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script>
+            function registerUser() {
+                let user_id = $("#user_id").val();
+                let user_pw = $("#user_pw").val();
+                let user_pw2 = $("#user_pw2").val();
+                let user_name = $("#user_name").val();
 
-            if (user_id == '' || user_pw == '' || user_pw2 == '' || user_name == '') {
-                alert("빈칸을 채워주세요.");
-                return;
-            }
-            else if (user_pw != user_pw2) {
-                alert('비밀번호가 같지 않습니다.');
-                return;
-            }
-
-            $.ajax({
-                type: "POST",
-                url: "/register",
-                data: {id: user_id, pw: user_pw, name: user_name},
-                success: function(res) {
-                    console.log(res);
-                    if (res['result'] == 'success') {
-                        alert(res['msg'])
-                        window.location.href = '/'
-                    }
-                    else {
-                        alert(res['msg']);
-                    }
+                if (user_id == '' || user_pw == '' || user_pw2 == '' || user_name == '') {
+                    alert("빈칸을 채워주세요.");
+                    return;
                 }
-            });
-        }
+                else if (user_pw != user_pw2) {
+                    alert('비밀번호가 같지 않습니다.');
+                    return;
+                }
 
-        function showLogin() {
-            window.location.href = '/'
-        }
+                $.ajax({
+                    type: "POST",
+                    url: "/register",
+                    data: {id: user_id, pw: user_pw, name: user_name},
+                    success: function(res) {
+                        console.log(res);
+                        if (res['result'] == 'success') {
+                            alert(res['msg'])
+                            window.location.href = '/'
+                        }
+                        else {
+                            alert(res['msg']);
+                        }
+                    }
+                });
+            }
 
-    </script>
-</head>
+            function showLogin() {
+                window.location.href = '/'
+            }
 
-<body class="mt-20">
-    <div class= "flex justify-center items-center">
-        <div class="flex flex-col">
-            <div class ="flex justify-center items-center">
-                <h1 class = "text-5xl font-bold">회원가입</h1>
-            </div>
-            <div>
-                <div class = "bg-gray-200 rounded-lg p-5 mt-10">
-                    
-                    <input id="user_id" class="border-2  w-96 h-12 p-5 m-10 block outline-none rounded-lg" type ="id"placeholder="아이디">
-                    <input id="user_pw" class="border-2  w-96 h-12 p-5 m-10 mt-0 block outline-none rounded-lg" type ="password"placeholder="비밀번호">
-                    <input id="user_pw2" class="border-2  w-96 h-12 p-5 m-10 mt-0 block outline-none rounded-lg" type ="password"placeholder="비밀번호 확인">
-                    <input id="user_name" class="border-2  w-96 h-12 p-5 m-10 mt-0 block outline-none rounded-lg" type ="name"placeholder="이름">
-                    
-                    <button onclick="registerUser();" class="w-96 h-12 bg-green-400 text-white m-10 mt-0 text-lg rounded-lg focus:outline-none hover:opacity-80">회원가입
-                    </button>
+        </script>
+    </head>
+
+    <body class="mt-20">
+        <div class= "flex justify-center items-center">
+            <div class="flex flex-col">
+                <div class ="flex justify-center items-center">
+                    <h1 class = "text-5xl font-bold">회원가입</h1>
                 </div>
-            </div>
-            <div class="flex justify-center items-center mt-5"><a onclick="showLogin();" class="text-gray-400">
-                로그인 화면으로
-            </a></div>
+                <div>
+                    <div class = "bg-gray-200 rounded-lg p-5 mt-10">
+                        
+                        <input id="user_id" class="border-2  w-96 h-12 p-5 m-10 block outline-none rounded-lg" type ="id"placeholder="아이디">
+                        <input id="user_pw" class="border-2  w-96 h-12 p-5 m-10 mt-0 block outline-none rounded-lg" type ="password"placeholder="비밀번호">
+                        <input id="user_pw2" class="border-2  w-96 h-12 p-5 m-10 mt-0 block outline-none rounded-lg" type ="password"placeholder="비밀번호 확인">
+                        <input id="user_name" class="border-2  w-96 h-12 p-5 m-10 mt-0 block outline-none rounded-lg" type ="name"placeholder="이름">
+                        
+                        <button onclick="registerUser();" class="w-96 h-12 bg-green-400 text-white m-10 mt-0 text-lg rounded-lg focus:outline-none hover:opacity-80">회원가입
+                        </button>
+                    </div>
+                </div>
+                <div class="flex justify-center items-center mt-5"><a onclick="showLogin();" class="text-gray-400">
+                    로그인 화면으로
+                </a></div>
 
+            </div>
         </div>
-    </div>
-</body>
+    </body>
 </html>

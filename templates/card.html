@@ -1,14 +1,52 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="/static/output.css" rel="stylesheet">
-  <title>정글에서 나침반 빌리기</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/output.css" rel="stylesheet">
+    <title>정글에서 나침반 빌리기</title>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <script>
+        function reservation(transaction_id) {
+            let reserve_place = $(`#${transaction_id}reserve_place`).val();
+            let reserve_date = $(`#${transaction_id}reserve_date`).val();
+            let reserve_hour = $(`#${transaction_id}reserve_hour`).val();
+
+            if (reserve_place == '' || reserve_date == '' || reserve_hour == '') {
+                alert("빈값을 입력해주세요!");
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/reservation",
+                data: {
+                    transaction_id: transaction_id,
+                    reserve_place: reserve_place,
+                    reserve_date: reserve_date,
+                    reserve_hour: reserve_hour
+                },
+                success: function (res) { 
+                    if (res["result"] == "success") {
+                        alert(res['msg']);
+                        window.location.reload();
+                    } else if (res["result"] == "error") {
+                        alert(res['msg']);
+                    } 
+                    else {
+                        alert("서버 오류!");
+                    }
+                }
+            });
+        }
+    </script>
 </head>
 <body>
-    {%block crad%}
-        {%for i in all_register%}
+    {%block card%}
+        {%for i in all_register
+            if i['product_status'] == '구하는 중'%}
         <!--rentModal start-->
         <div id = "rentModal2" tabindex="-1" aria-hidden="true"  class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full rentModal">
         <div class="relative w-full h-full max-w-xl md:h-auto">
@@ -21,11 +59,13 @@
                 </button>
             </div>
             <div class = "w-full h-full p-5 bg-white rounded-b-xl">
+                <div id="{{i['_id']}}" style="display:none">{{i['_id']}}</div>
                 <div class ="flex flex-col justify-center items-center">
                     <div class = "flex flex-col justify-center items-center px-5 bg-gray-200 rounded-lg">
                         <div class = "flex justify-start items-start mt-5">
+                            
                             <div class = "font-bold mr-4">
-                                대여자: <span>{{i['rent_user']}}</span>
+                                빌리고 싶은 사람: <span>{{i['rent_user']}}</span>
                             </div>
                             <div class ="font-bold">
                                 대여 물품: <span>{{i['product']}}</span>
@@ -33,25 +73,25 @@
                         </div>
                         <div class = "flex justify-start items-start my-5">
                             <div class = "font-bold">
-                                대여 기간: <span>{{i['time_start']}} ~ {{i['time_finish']}}</span>
+                                대여 기간: <span>{{i['time_start'][:10]}} {{i['time_start'][10:]}}:00 ~ {{i['time_finish'][:10]}} {{i['time_finish'][10:]}}:00</span>
                             </div>
                         </div>
                     </div>
                     <form>
                     <div class="flex justify-start items-center mt-5">
                         <div class="font-bold w-20">대여장소: </div>
-                        <input class="w-52 ml-5 p-2 bg-gray-100">
+                        <input id="{{i['_id']}}reserve_place" class="w-52 ml-5 p-2 bg-gray-100">
                     </div>
                     
                     <div class="flex justify-start items-center  mt-10">
                         <div class="font-bold w-20">
                         대여 시간:
                         </div>
-                        <input class="w-32 ml-5 p-2 bg-gray-100" type="date">
-                        <input class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23">
+                        <input id="{{i['_id']}}reserve_date" class="w-32 ml-5 p-2 bg-gray-100" type="date">
+                        <input id="{{i['_id']}}reserve_hour" class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23">
                     </div>
                     </form>
-                    <button class="font-bold bg-green-400 text-white mx-auto my-10 h-10 w-80 block rounded-lg hover:opacity-80">빌려주기</button>
+                    <button onclick='reservation("{{i['_id']}}");'class="font-bold bg-green-400 text-white mx-auto my-10 h-10 w-80 block rounded-lg hover:opacity-80">빌려주기</button>
                     </div>
                 </div>
             </div>
@@ -61,8 +101,8 @@
             <div class="flex justify-start items-center p-4">
                 <div class = "font-bold mx-3">대여물품:</div>
                 <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">{{i['product']}}</div>
-                <div class = "font-bold mx-3">이름:</div>
-                <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg"></div>
+                <div class = "font-bold mx-3">빌릴 사람:</div>
+                <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">{{i['rent_user']}}</div>
             </div>
             <div class="flex justify-start items-center p-4">
                 <div class = "font-bold mx-3">대여기간:</div>
@@ -73,8 +113,14 @@
                 <div class = "font-bold mx-3">사용목적:</div>
                 <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">{{i['purpose_Rental']}}</div>
             </div>
+            <div class="flex justify-start items-center p-4">
+                <div class = "font-bold mx-3">현재상태:</div>
+                <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">구하는 중</div>
+            </div>
             <button data-modal-target="rentModal2" data-modal-toggle="rentModal2" class="font-bold bg-green-400 text-white mx-auto mt-1 h-10 w-10/12 block rounded-lg rentModalButton">빌려주기</button>
         </div>
     {% endfor %}
   {% endblock %}
+
+x
 </body>

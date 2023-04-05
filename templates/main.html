@@ -1,70 +1,86 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="/static/output.css" rel="stylesheet">
-  <title>정글에서 나침반 빌리기</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script>
-    $(document).ready(function(){
-        $(".rentModal").each(function(index,item){
-            $(item).attr('id', `rentModal${index}`);
-        });
-
-        $(".rentModalButton").each(function(index,item){
-            $(item).attr('data-modal-target', `rentModal${index}`);
-            $(item).attr('data-modal-toggle', `rentModal${index}`);
-        });
-        $(".rentModalExit").each(function(index,item){
-            $(item).attr('data-modal-hide', `rentModal${index}`);
-        });
-    })
-    function Show_register()
-    {
-        window.location.href = '/register_product'
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/output.css" rel="stylesheet">
+    <title>정글에서 나침반 빌리기</title>
     
-    function Product_register()
-    {    
-        let product = $("#product").val();
-        let time_start1 = $("#time_start1").val();
-        let time_start2 = $("#time_start2").val();
-        let time_start = time_start1 + time_start2;
-        let time_finish1 = $("#time_finish1").val();
-        let time_finish2 = $("#time_finish2").val();
-        let time_finish = time_finish1 + time_finish2;
-        let purpose_Rental = $("#purpose_Rental").val();
-
-        if(product == '' ||time_start1 == ''||time_start2 == '' ||time_finish1 == ''||time_finish2 == '' ||purpose_Rental == '')
-        {
-            alert("빈칸을 채워주세요");
-            return;
-        }
-        if(Date.parse(time_start1) > Date.parse(time_finish1))
-        {
-            alert('종료시간이 시작시간보다 빠름니다.');
-            return;
-        }
-
-        $.ajax({
-            type: "POST", // POST 방식으로 요청
-            url: "/main", 
-            data: {product_give: product, time_start_give: time_start,time_finish_give:time_finish,purpose_Rental_give:purpose_Rental}, // 데이터를 주는 방법
-            success: function (response) { 
-                if (response["result"] == "success") {
-                    alert("등록되었습니다");
-                    window.location.href = '/main';
-                } else {
-                    alert("서버 오류!");
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    
+    <script>
+        function logout_process() {
+            $.ajax({
+                type: "GET",
+                url: "/logout",
+                data: {},
+                success: function(res) {
+                    alert(res['msg']);
+                    if (res['result'] == 'success') {
+                        window.location.href = '/'
+                    }
                 }
+            })
+        }
+
+        function Product_register() {
+            let product = $("#product").val();
+            let time_start1 = $("#time_start1").val();
+            let time_start2 = $("#time_start2").val();
+            let time_start = time_start1 + time_start2;
+            let time_finish1 = $("#time_finish1").val();
+            let time_finish2 = $("#time_finish2").val();
+            let time_finish = time_finish1 + time_finish2;
+            let purpose_Rental = $("#purpose_Rental").val();
+
+            if(product == '' ||time_start1 == ''||time_start2 == '' ||time_finish1 == ''||time_finish2 == '' ||purpose_Rental == '')
+            {
+                alert("빈칸을 채워주세요");
+                return;
             }
-        });
-    }
-</script>
+            if(Date.parse(time_start1) > Date.parse(time_finish1))
+            {
+                alert('종료시간이 시작시간보다 빠름니다.');
+                return;
+            }
+
+            $.ajax({
+                type: "POST", // POST 방식으로 요청
+                url: "/main", 
+                data: {product_give: product, time_start_give: time_start,time_finish_give:time_finish,purpose_Rental_give:purpose_Rental}, // 데이터를 주는 방법
+                success: function (response) { 
+                    if (response["result"] == "success") {
+                        alert("등록되었습니다");
+                        window.location.href = '/main';
+                    } else {
+                        alert("서버 오류!");
+                    }
+                }
+            });
+        }
+        
+        function Show_mypage()
+        {
+            window.location.href = '/mypage';
+        }
+
+        $(document).ready(function(){
+            $(".rentModal").each(function(index,item){
+                $(item).attr('id', `rentModal${index}`);
+            });
+            $(".rentModalButton").each(function(index,item){
+                $(item).attr('data-modal-target', `rentModal${index}`);
+                $(item).attr('data-modal-toggle', `rentModal${index}`);
+            });
+            $(".rentModalExit").each(function(index,item){
+                $(item).attr('data-modal-hide', `rentModal${index}`);
+            });
+        })
+    </script>
 </head>
+
 <body>
     <!--reserveModal start-->
     <div id = "reserveModal" tabindex="-1" aria-hidden="true"  class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full">
@@ -112,24 +128,31 @@
         </div>
     </div> 
     <!--reserveModal end-->
+    
     <!--navBar start-->
     <div class= "w-full flex justify-around items-center p-4 border-b-2">
-        <button class="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
+        <button onclick = 'Show_mypage()' class="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
              MyPage
         </button>
+        <div class = "font-bold mx-3 px-3 py-1 rounded-lg">ID: {{ user_id }} </div>
         <div>
             <h1 class="text-5xl font-bold inline-block">
                 정글에서 <span class ="text-green-400">나침반</span> 빌리기
             </h1>
         </div>
-        <button data-modal-target="reserveModal" data-modal-toggle="reserveModal" class ="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
+        <button onclick="Show_register()" data-modal-target="reserveModal" data-modal-toggle="reserveModal" class ="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
             등록
+        </button>
+        <button onclick="logout_process();" class ="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
+            로그아웃
         </button>
     </div>
     <!--navBar end-->
     <!--main start-->
     <div class="flex flex-wrap justify-center items-center">
         {% extends 'card.html' %}
+
     </div>
-<!--main end-->
+
+    <!--main end-->
 </body>
