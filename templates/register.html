@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="/static/output.css" rel="stylesheet">
+  <title>정글에서 나침반 빌리기</title>
+</head>
+<body>
+    <div class= "w-full flex justify-around items-center p-4 border-b-2">
+        <button class="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
+             MyPage
+        </button>
+        <div>
+            <h1 class="text-5xl font-bold inline-block">
+                정글에서 <span class ="text-green-400">나침반</span> 빌리기
+            </h1>
+        </div>
+        <button class ="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
+            등록
+        </button>
+    </div>
+    <div class="flex flex-col justify-center items-center">
+        <div class="font-bold mt-10 text-3xl">
+            대여 희망 물품 등록
+        </div>
+        <form>
+
+            <div class="flex justify-center items-center mt-10">
+                <div class="font-bold">물품: </div>
+            <input class="w-[500px] ml-5 p-2 bg-gray-100">
+        </div>
+        
+        <div class="flex justify-center items-center mt-10">
+            <div class="font-bold">
+            대여 시작 시간:
+            </div>
+            <input class="w-[300px] ml-5 p-2 bg-gray-100" type="date">
+            <input class="w-[240px] ml-5 p-2 bg-gray-100" type="number">
+            </div>
+        </div>
+        <div class="flex justify-center items-center mt-10">
+            <div class="font-bold">
+                대여 종료 시간:
+            </div>
+            <input class="w-[300px] ml-5 p-2 bg-gray-100" type="date">
+                <input class="w-[240px] ml-5 p-2 bg-gray-100" type="number">
+            </div>
+        <div class="flex justify-center items-center mt-10">
+            <div class="font-bold">대여목적: </div>
+            <input class="w-[500px] ml-5 p-2 bg-gray-100">
+        </div>
+        </form>
+        <button class="font-bold bg-green-400 text-white mx-auto mt-5 h-10 w-80 block rounded-lg">대여신청</button>
+        </div>
+    </div>
+    
+</body>
+</html>

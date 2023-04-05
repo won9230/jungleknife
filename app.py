@@ -19,11 +19,7 @@ jwt = JWTManager(app)
 def home():
    return render_template("login.html")
 
-users = [['물품1','이름1','사용기간1','사용목적1'],['물품2','이름2','사용기간2','사용목적2']]
-
-
-
-## 메인페이지로 이동
+## 메인페이지로 이동 및 물품 데이터 넘김
 @app.route("/main", methods=['GET'])
 def show_main():
     jwtToken = request.cookies.get('mytoken')
@@ -41,8 +37,12 @@ def show_main():
     logoutCheck = jti in jwt_blocklist
     if logoutCheck:
         return render_template('login.html')
-    
-    return render_template('main.html', user_id=user_id)
+################## 메인페이지에 등록 카드 생성 및 갱신 ################
+    _all_register = db.register.find().sort('time_finish',-1)
+    all_register = list(_all_register)
+    for i in all_register:
+        print(i['time_finish'])
+    return render_template('main.html', user_id=user_id, all_register = all_register)
 
 ## 회원가입 페이지로 이동
 @app.route("/join")
@@ -58,7 +58,7 @@ def login_proc():
     user_id = input_data['id']
     user_pw = input_data['pw']
     
-    # 
+    ## 유저 id 찾기
     users = list(db.users.find({'id': user_id}))
     
     if len(users) == 0:
@@ -111,6 +111,23 @@ def register_user():
     ## 데이터베이스 등록
     db.users.insert_one({'id': user_id, 'pw': byted_pw, 'name': user_name})
     return jsonify({'result': 'success', 'msg': 'Join Success!'})
+
+##등록사이트 넘어가기
+@app.route('/register_product')
+def Product_register():
+    return render_template("register_product.html")
+
+##물품등록
+@app.route("/register_product",methods=['POST'])
+def rental_Registration():
+    input_data = request.form
+    product = input_data['product_give']
+    time_start = input_data['time_start_give']
+    time_finish = input_data['time_finish_give']
+    purpose_Rental = input_data['purpose_Rental_give']
+    
+    db.register.insert_one({'product' : product, 'time_start' : time_start,'time_finish' : time_finish,'purpose_Rental' : purpose_Rental})
+    return jsonify({'result' : 'success'})
 
 
 if __name__ == '__main__':  
