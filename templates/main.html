@@ -60,6 +60,55 @@
                 }
             })
         }
+
+        function Product_register() {
+            let product = $("#product").val();
+            let time_start1 = $("#time_start1").val();
+            let time_start2 = $("#time_start2").val();
+            let time_start = time_start1 + time_start2;
+            let time_finish1 = $("#time_finish1").val();
+            let time_finish2 = $("#time_finish2").val();
+            let time_finish = time_finish1 + time_finish2;
+            let purpose_Rental = $("#purpose_Rental").val();
+
+            if(product == '' ||time_start1 == ''||time_start2 == '' ||time_finish1 == ''||time_finish2 == '' ||purpose_Rental == '')
+            {
+                alert("빈칸을 채워주세요");
+                return;
+            }
+            if(Date.parse(time_start1) > Date.parse(time_finish1))
+            {
+                alert('종료시간이 시작시간보다 빠름니다.');
+                return;
+            }
+
+            $.ajax({
+                type: "POST", // POST 방식으로 요청
+                url: "/main", 
+                data: {product_give: product, time_start_give: time_start,time_finish_give:time_finish,purpose_Rental_give:purpose_Rental}, // 데이터를 주는 방법
+                success: function (response) { 
+                    if (response["result"] == "success") {
+                        alert("등록되었습니다");
+                        window.location.href = '/main';
+                    } else {
+                        alert("서버 오류!");
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function(){
+            $(".rentModal").each(function(index,item){
+                $(item).attr('id', `rentModal${index}`);
+            });
+            $(".rentModalButton").each(function(index,item){
+                $(item).attr('data-modal-target', `rentModal${index}`);
+                $(item).attr('data-modal-toggle', `rentModal${index}`);
+            });
+            $(".rentModalExit").each(function(index,item){
+                $(item).attr('data-modal-hide', `rentModal${index}`);
+            });
+        })
     </script>
 </head>
 
@@ -80,85 +129,37 @@
                     <form>
                         <div class="flex justify-start items-center mt-5">
                             <div class="font-bold w-20">물품: </div>
-                            <input class="w-36 ml-5 p-2 bg-gray-100">
+                            <input id = "product" class="w-36 ml-5 p-2 bg-gray-100">
                         </div>
                     
                     <div class="flex justify-start items-center  mt-10">
                         <div class="font-bold w-20">
                         시작 시간:
                         </div>
-                        <input class="w-32 ml-5 p-2 bg-gray-100" type="date">
-                        <input class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23">
+                        <input id = "time_start1" class="w-32 ml-5 p-2 bg-gray-100" type="date">
+                        <input id = "time_start2" class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23">
                     </div>
                     
                     <div class="flex justify-start items-center mt-10">
                         <div class="font-bold w-20">
                             종료 시간:
                         </div>
-                        <input class="w-32 ml-5 p-2 bg-gray-100" type="date">
-                        <input class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23">
+                        <input id = "time_finish1" class="w-32 ml-5 p-2 bg-gray-100" type="date">
+                        <input id = "time_finish2"  class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23">
                         </div>
                     <div class="flex justify-start items-center mt-10">
                         <div class="font-bold w-20" >대여목적: </div>
-                        <textarea class="w-80 h-24 ml-5 p-2 bg-gray-100 whitespace-normal overflow-auto resize-none"></textarea>
+                        <textarea id= "purpose_Rental" class="w-80 h-24 ml-5 p-2 bg-gray-100 whitespace-normal overflow-auto resize-none"></textarea>
                     </div>
                     </form>
-                    <button class="font-bold bg-green-400 text-white mx-auto my-10 h-10 w-80 block rounded-lg hover:opacity-80">대여신청</button>
+                    <button onclick="Product_register()" class="font-bold bg-green-400 text-white mx-auto my-10 h-10 w-80 block rounded-lg hover:opacity-80">대여신청</button>
                     </div>
                 </div>
             </div>
         </div>
     </div> 
     <!--reserveModal end-->
-    <!--rentModal start-->
-    <div id = "rentModal" tabindex="-1" aria-hidden="true"  class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full">
-        <div class="relative w-full h-full max-w-xl md:h-auto">
-            <div class="flex justify-between items-center w-full py-3 px-5 bg-white rounded-t-xl border-b-2">
-                <div class="font-bold text-2xl">
-                    빌려주기
-                </div>
-                <button type="button" class="text-gray-400 text-bold text-2xl bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="rentModal">
-                    X
-                </button>
-            </div>
-            <div class = "w-full h-full p-5 bg-white rounded-b-xl">
-                <div class ="flex flex-col justify-center items-center">
-                    <div class = "flex flex-col justify-center items-center px-5 bg-gray-200 rounded-lg">
-                        <div class = "flex justify-start items-start mt-5">
-                            <div class = "font-bold mr-4">
-                                대여자: <span>홍윤표</span>
-                            </div>
-                            <div class ="font-bold">
-                                대여 물품: <span>물걸레</span>
-                            </div>
-                        </div>
-                        <div class = "flex justify-start items-start my-5">
-                            <div class = "font-bold">
-                                대여 기간: <span>2023-03-04 09:00 ~ 2023-03-04 10:00</span>
-                            </div>
-                        </div>
-                    </div>
-                    <form>
-                    <div class="flex justify-start items-center mt-5">
-                        <div class="font-bold w-20">대여장소: </div>
-                        <input class="w-52 ml-5 p-2 bg-gray-100">
-                    </div>
-                    
-                    <div class="flex justify-start items-center  mt-10">
-                        <div class="font-bold w-20">
-                        대여 시간:
-                        </div>
-                        <input class="w-32 ml-5 p-2 bg-gray-100" type="date">
-                        <input class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23">
-                        </div>
-                    </form>
-                    <button class="font-bold bg-green-400 text-white mx-auto my-10 h-10 w-80 block rounded-lg hover:opacity-80">빌려주기</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> 
-    <!--rentModal end-->
+    
     <!--navBar start-->
     <div class= "w-full flex justify-around items-center p-4 border-b-2">
         <button class="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
@@ -180,47 +181,8 @@
     <!--navBar end-->
     <!--main start-->
     <div class="flex flex-wrap justify-center items-center">
-        <div class="bg-gray-200 w-[650px] mx-5 mt-5 p-3 rounded-lg">
-            <div class="flex justify-start items-center p-4">
-                <div class = "font-bold mx-3">대여물품:</div>
-                <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">물걸레</div>
-                <div class = "font-bold mx-3">대여자:</div>
-            <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">홍윤표</div>
-        </div>
-        <div class="flex justify-start items-center p-4">
-            <div class = "font-bold mx-3">대여기간:</div>
-            <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">2023.04.03 13:00 ~ 2023.04.03 15:00</div>
-        </div>
-        <div class="flex justify-start items-center p-4">
-            <div class = "font-bold mx-3">사용목적:</div>
-            <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">제가 재밌게놀면서 쓰고 싶습니다</div>
-        </div>
-        <button data-modal-target="rentModal" data-modal-toggle="rentModal" class="font-bold bg-green-400 text-white mx-auto mt-1 h-10 w-10/12 block rounded-lg hover:opacity-80">빌려주기</button>
-        </div>
-        <div class="bg-gray-200 w-[650px] mx-5 mt-5 p-3 rounded-lg">
-            <div class="flex justify-start items-center p-4">
-                <div class = "font-bold mx-3">대여물품:</div>
-                <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">물걸레</div>
-                <div class = "font-bold mx-3">대여자:</div>
-                <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">홍윤표</div>
-            </div>
-        <div class="flex justify-start items-center p-4">
-            <div class = "font-bold mx-3">대여기간:</div>
-            <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">2023.04.03 13:00 ~ 2023.04.03 15:00</div>
-        </div>
-        
-        <div class="flex justify-start items-center p-4">
-            <div class = "font-bold mx-3">사용목적:</div>
-            <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">제가 재밌게놀면서 쓰고 싶습니다</div>
-        </div>
-        <button data-modal-target="rentModal" data-modal-toggle="rentModal" class="font-bold bg-green-400 text-white mx-auto mt-1 h-10 w-10/12 block rounded-lg hover:opacity-80">빌려주기</button>
-        </div>
         {% extends 'card.html' %}
     </div>
-    
-
 
     <!--main end-->
-
-    
 </body>
