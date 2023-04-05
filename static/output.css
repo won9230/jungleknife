@@ -1174,6 +1174,10 @@ input:checked + .toggle-bg {
   margin-left: auto;
 }
 
+.mr-4 {
+  margin-right: 1rem;
+}
+
 .block {
   display: block;
 }
@@ -1342,6 +1346,14 @@ input:checked + .toggle-bg {
   width: 18rem;
 }
 
+.w-52 {
+  width: 13rem;
+}
+
+.w-\[600px\] {
+  width: 600px;
+}
+
 .max-w-xl {
   max-width: 36rem;
 }
@@ -1426,6 +1438,10 @@ input:checked + .toggle-bg {
 
 .flex-wrap {
   flex-wrap: wrap;
+}
+
+.flex-wrap-reverse {
+  flex-wrap: wrap-reverse;
 }
 
 .content-center {
