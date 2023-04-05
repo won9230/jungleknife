@@ -9,16 +9,25 @@
     </head>
     <body>
         <div id = "reserveModal" tabindex="-1" aria-hidden="true"  class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full">
+            
             <div class="relative w-full h-full max-w-xl md:h-auto">
-                <div class = "w-full h-full p-5 bg-white rounded-lg">
+                <div class="flex justify-between items-center w-full py-3 px-5 bg-white rounded-t-xl border-b-2">
+                    <div class="font-bold text-2xl">
+                        예약정보
+                    </div>
+                    <button type="button" class="text-gray-400 text-bold text-2xl bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="reserveModal">
+                        X
+                    </button>
+                </div>
+                <div class = "w-full h-full p-5 bg-white rounded-b-xl">
                     <div class ="flex flex-col justify-start items-start">
-                        <div class ="font-bold mt-5">
+                        <div class ="font-bold mt-3">
                             예약시간: <span>2023-01-03 12시</span>
                         </div>
                         <div class ="font-bold mt-5">
                             예약장소: <span>place</span>
                         </div>
-                        <div class ="font-bold my-5">
+                        <div class ="font-bold mt-5 mb-3">
                             대여자: <span>person</span>
                         </div>
                         
@@ -55,7 +64,6 @@
                             <div class="flex justify-start items-center p-4">
                                 <div class = "font-bold mx-3">대여기간:</div>
                                 <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">2023.04.03 13:00 ~ 2023.04.03 15:00</div>
-                        
                     </div>
                     
                     <div class="flex justify-start items-center p-4">
@@ -72,9 +80,6 @@
                                 대여 중
                             </div>
                         </div>
-                    </div>
-                    <div>
-
                     </div>
                 </div>
             </div>
