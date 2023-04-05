@@ -222,7 +222,32 @@ def make_reservation():
                                                     })
     
     return jsonify({'result' : 'success', 'msg': '예약 성공'})
+
+
+@app.route('/cancle', methods=['POST'])
+def cancle_reservation():
+    jwt_token = request.cookies.get('access_token')
+    if jwt_token is None:
+        return redirect(LOCALHOST+'/'), 400
     
+    try:
+        user_id = decode_token(jwt_token).get(IDENTITY, None)
+    except ExpiredSignatureError:
+        # 쿠키 시간 만료의 경우, 로그인 페이지로
+        return redirect(LOCALHOST+'/'), 400
+    
+    input_data = request.form
+    transaction_id = input_data['transaction_id']
+    
+    db.register.update_one({'_id': ObjectId(transaction_id)}, {'$set': {
+                                                                'reserve_user': '',
+                                                                'reserve_place': '',
+                                                                'reserve_time': '',
+                                                                'product_status': '구하는 중'
+                                                            }
+                                                    })
+    
+    return jsonify({'result' : 'success', 'msg': '예약 취소 성공'})
 
 if __name__ == '__main__':  
    app.run('0.0.0.0', port=PORT, debug=True)
