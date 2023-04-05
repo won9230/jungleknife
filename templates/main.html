@@ -1,15 +1,57 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="/static/output.css" rel="stylesheet">
-  <title>정글에서 나침반 빌리기</title>
-  <script src="../node_modules/flowbite/dist/flowbite.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/output.css" rel="stylesheet">
+    <title>정글에서 나침반 빌리기</title>
+    
+    <script src="../node_modules/flowbite/dist/flowbite.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    
+    <script>
+        function registerProduct() {
+            let product_name = $("#product_name").val();
+            let start_day = $("#start_day").val();
+            let start_hour = $("#start_hour").val();
+            let end_day = $("#end_day").val();
+            let end_hour = $("#end_hour").val();
+            let purpose = $("#purpose").val();
+
+            if (product_name == '' || purpose == '') {
+                alert("빈칸을 채워주세요.");
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                    url: "/register/product",
+                    data: {
+                        product_name: product_name,
+                        start_day: start_day,
+                        start_hour: start_hour,
+                        end_day: end_day,
+                        end_hour: end_hour,
+                        purpose: purpose
+                    },
+                    success: function(res) {
+                        console.log(res);
+                        if (res['result'] == 'success') {
+                            console.log("물건 등록 성공");
+                        }
+                        else {
+                            alert(res['msg']);
+                        }
+                    }
+            });
+        }
+    </script>
 </head>
+
 <body>
     <div id = "reserveModal" tabindex="-1" aria-hidden="true"  class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full">
-            
+        
         <div class="relative w-full h-full max-w-xl md:h-auto">
             <div class="flex justify-between items-center w-full py-3 px-5 bg-white rounded-t-xl border-b-2">
                 <div class="font-bold text-2xl">
@@ -24,39 +66,42 @@
                     <form>
                         <div class="flex justify-start items-center mt-5">
                             <div class="font-bold w-20">물품: </div>
-                        <input class="w-36 ml-5 p-2 bg-gray-100">
+                        <input id="product_name" class="w-36 ml-5 p-2 bg-gray-100">
                     </div>
                     
                     <div class="flex justify-start items-center  mt-10">
                         <div class="font-bold w-20">
                         시작 시간:
                         </div>
-                        <input class="w-32 ml-5 p-2 bg-gray-100" type="date">
-                        <input class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23">
+                        <input id="start_day" class="w-32 ml-5 p-2 bg-gray-100" type="date">
+                        <input id="start_hour" class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23">
                         </div>
                     
                     <div class="flex justify-start items-center mt-10">
                         <div class="font-bold w-20">
                             종료 시간:
                         </div>
-                        <input class="w-32 ml-5 p-2 bg-gray-100" type="date">
-                        <input class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23">
+                        <input id="end_day" class="w-32 ml-5 p-2 bg-gray-100" type="date">
+                        <input id="end_hour" class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23">
                         </div>
                     <div class="flex justify-start items-center mt-10">
                         <div class="font-bold w-20" >대여목적: </div>
-                        <textarea class="w-80 h-24 ml-5 p-2 bg-gray-100 whitespace-normal overflow-auto resize-none"></textarea>
+                        <textarea id="" purposeclass="w-80 h-24 ml-5 p-2 bg-gray-100 whitespace-normal overflow-auto resize-none"></textarea>
                     </div>
                     </form>
-                    <button class="font-bold bg-green-400 text-white mx-auto my-10 h-10 w-80 block rounded-lg">대여신청</button>
+                    <button onclick="registerProduct();" class="font-bold bg-green-400 text-white mx-auto my-10 h-10 w-80 block rounded-lg">대여신청</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div> 
+    </div>
     <div class= "w-full flex justify-around items-center p-4 border-b-2">
         <button class="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
              MyPage
         </button>
+        <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">
+            {{ user_id }}
+        </div>
         <div>
             <h1 class="text-5xl font-bold inline-block">
                 정글에서 <span class ="text-green-400">나침반</span> 빌리기
@@ -64,6 +109,9 @@
         </div>
         <button data-modal-target="reserveModal" data-modal-toggle="reserveModal" class ="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
             등록
+        </button>
+        <button class ="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
+            로그아웃
         </button>
     </div>
     <div class="flex flex-wrap justify-center items-center">
