@@ -27,14 +27,16 @@ jwt_blocklist = set()
 @app.route('/')
 def home():
     jwt_token = request.cookies.get('access_token')
-    if jwt_token is None :
+    if jwt_token is None:
+        # 일반적인 로그인
         return render_template('login.html'), 200
     
-    try:
-        user_id = decode_token(jwt_token).get(IDENTITY, None)
-    except ExpiredSignatureError:
-        return render_template('login.html'), 404
+    jti = decode_token(jwt_token)['jti']
+    if jti in jwt_blocklist:
+        # 쿠키를 발급받았지만 로그아웃 후 다시 로그인할 때
+        return render_template('login.html'), 200
     
+    # 쿠키가 유효하여 로그인을 유지한 상태로 main 페이지로 리다이렉션
     return redirect(LOCALHOST + '/main'), 201
 
 
@@ -50,6 +52,7 @@ def show_main():
         jti = decode_token(jwt_token)['jti']
         user_id = decode_token(jwt_token).get(IDENTITY, None)
     except ExpiredSignatureError:
+        # 쿠키 시간 만료의 경우, 로그인 페이지로
         return redirect(LOCALHOST+'/'), 400
     
     #logout된 token의 경우 login페이지 rediect
@@ -96,7 +99,7 @@ def login_proc():
     
     if len(users) == 0:
         # 아이디 존재하지 않는 경우
-        return jsonify({'result': 'fail', 'msg': 'ID가 존재하지 않습니다.'}), 400
+        return jsonify({'result': 'fail', 'msg': 'ID가 존재하지 않습니다.'})
     
     if bcrypt.checkpw(user_pw.encode('utf-8'), users[0]['pw']):
         # 아이디, 비밀번호가 일치하는 경우
@@ -107,25 +110,24 @@ def login_proc():
         return jsonify({'result': 'success', 'user_id': user_id, 'access_token': access_token, 'refresh_token': refresh_token}), 200
     # 아이디, 비밀번호가 일치하지 않는 경우
     print('실패')
-    return jsonify({'result': 'fail', 'msg': '비밀번호가 틀렸습니다.'}), 401
+    return jsonify({'result': 'fail', 'msg': '비밀번호가 틀렸습니다.'})
 
 # blocklist 기능 사용을 위한 세팅
-# @jwt.token_in_blocklist_loader
-# def check_if_token_is_revoked(jwt_header, jwt_payload) :
-# 	jti = jwt_payload['jti']
-# 	return jti in jwt_blocklist
+@jwt.token_in_blocklist_loader
+def check_if_token_is_revoked(jwt_header, jwt_payload):
+	jti = jwt_payload['jti']
+	return jti in jwt_blocklist
 
 
 # 로그아웃 api
 @app.route('/logout', methods=['GET'])
-def logout_proc() :
+def logout_proc():
     jwt_token = request.cookies.get('access_token')
     
     jti = decode_token(jwt_token)['jti']
     jwt_blocklist.add(jti) # 로그인 user의 jti를 blocklist에 등록
-    return redirect(LOCALHOST+'/')
     
-    
+    return jsonify({'result': 'success', 'msg': '로그아웃 성공!'})
     
 
 ## 회원가입 api
@@ -140,14 +142,14 @@ def register_user():
     users = list(db.users.find())
     for u in users:
         if u['id'] == user_id:
-            return jsonify({'result': 'fail', 'msg': 'ID 중복!'}), 400
+            return jsonify({'result': 'fail', 'msg': 'ID 중복!'})
     
     ## 비밀번호 암호화
     byted_pw = bcrypt.hashpw(user_pw.encode('utf-8'), bcrypt.gensalt())
     
     ## 데이터베이스 등록
     db.users.insert_one({'id': user_id, 'pw': byted_pw, 'name': user_name})
-    return jsonify({'result': 'success', 'msg': 'Join Success!'}), 200
+    return jsonify({'result': 'success', 'msg': 'Join Success!'})
 
 
 if __name__ == '__main__':  
