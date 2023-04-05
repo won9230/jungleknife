@@ -9,6 +9,54 @@
 <body>
     {%block crad%}
         {%for i in all_register%}
+        <!--rentModal start-->
+        <div id = "rentModal2" tabindex="-1" aria-hidden="true"  class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full rentModal">
+        <div class="relative w-full h-full max-w-xl md:h-auto">
+            <div class="flex justify-between items-center w-full py-3 px-5 bg-white rounded-t-xl border-b-2">
+                <div class="font-bold text-2xl">
+                    빌려주기
+                </div>
+                <button type="button" class="text-gray-400 text-bold text-2xl bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white rentModalExit" data-modal-hide="rentModal2">
+                    X
+                </button>
+            </div>
+            <div class = "w-full h-full p-5 bg-white rounded-b-xl">
+                <div class ="flex flex-col justify-center items-center">
+                    <div class = "flex flex-col justify-center items-center px-5 bg-gray-200 rounded-lg">
+                        <div class = "flex justify-start items-start mt-5">
+                            <div class = "font-bold mr-4">
+                                대여자: <span>{{i['rent_user']}}</span>
+                            </div>
+                            <div class ="font-bold">
+                                대여 물품: <span>{{i['product']}}</span>
+                            </div>
+                        </div>
+                        <div class = "flex justify-start items-start my-5">
+                            <div class = "font-bold">
+                                대여 기간: <span>{{i['time_start']}} ~ {{i['time_finish']}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <form>
+                    <div class="flex justify-start items-center mt-5">
+                        <div class="font-bold w-20">대여장소: </div>
+                        <input class="w-52 ml-5 p-2 bg-gray-100">
+                    </div>
+                    
+                    <div class="flex justify-start items-center  mt-10">
+                        <div class="font-bold w-20">
+                        대여 시간:
+                        </div>
+                        <input class="w-32 ml-5 p-2 bg-gray-100" type="date">
+                        <input class="w-20 ml-5 p-2 bg-gray-100" type="number" min="0" max="23">
+                    </div>
+                    </form>
+                    <button class="font-bold bg-green-400 text-white mx-auto my-10 h-10 w-80 block rounded-lg hover:opacity-80">빌려주기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!--rentModal end-->
         <div class="bg-gray-200 w-[650px] mx-5 mt-5 p-3 rounded-lg">
             <div class="flex justify-start items-center p-4">
                 <div class = "font-bold mx-3">대여물품:</div>
@@ -25,7 +73,7 @@
                 <div class = "font-bold mx-3">사용목적:</div>
                 <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">{{i['purpose_Rental']}}</div>
             </div>
-            <button class="font-bold bg-green-400 text-white mx-auto mt-1 h-10 w-10/12 block rounded-lg">빌려주기</button>
+            <button data-modal-target="rentModal2" data-modal-toggle="rentModal2" class="font-bold bg-green-400 text-white mx-auto mt-1 h-10 w-10/12 block rounded-lg rentModalButton">빌려주기</button>
         </div>
     {% endfor %}
   {% endblock %}
