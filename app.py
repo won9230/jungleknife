@@ -1,15 +1,29 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for
+<<<<<<< HEAD
 #from apscheduler.schedulers.background import BackgroundScheduler
 import bcrypt
 from datetime import datetime
 from flask_jwt_extended import *
+=======
+from apscheduler.schedulers.background import BackgroundScheduler
+import bcrypt
+import time
+from datetime import datetime
+from flask_jwt_extended import *
+from datetime import datetime, timedelta
+from flask_jwt_extended.config import config
+>>>>>>> b007dab7ab8a9eb183093f44443c6484366a13bc
 from jwt.exceptions import ExpiredSignatureError
 
 from Config import *
 
 from bson.objectid import ObjectId
 from pymongo import MongoClient
+<<<<<<< HEAD
 client = MongoClient(MONGODB, 27017)
+=======
+client = MongoClient('localhost', 27017)
+>>>>>>> b007dab7ab8a9eb183093f44443c6484366a13bc
 db = client.jungleknife
 
 app = Flask(__name__)
@@ -79,12 +93,18 @@ def show_main():
 def show_join():
     return render_template("join.html")
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> b007dab7ab8a9eb183093f44443c6484366a13bc
 @app.route("/register")
 def show_register():
     return render_template("register.html")
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> b007dab7ab8a9eb183093f44443c6484366a13bc
 @app.route("/rent")
 def show_rent():
     return render_template("rent.html")
@@ -207,11 +227,19 @@ def make_reservation():
     time_finish = db.register.find_one({'_id': ObjectId(transaction_id)})['time_finish']
     
     print(time_start +' '+time_finish)
+<<<<<<< HEAD
     print(''.join(time_finish.split('-'))[:8])
     if int(''.join(time_finish.split('-'))[:8]) < int(''.join(reserve_date.split('-'))):
         return jsonify({'result' : 'error', 'msg': '종료 날짜가 더 큽니다.'})
     if int(''.join(time_finish.split('-'))[:8]) == int(''.join(reserve_date.split('-'))) and int(''.join(time_finish.split('-'))[8:]) < int(reserve_hour):
         return jsonify({'result' : 'error', 'msg': '종료 시간이 더 큽니다.'})
+=======
+    val = int(''.join((reserve_date+reserve_hour).split('-')))
+    print(val)
+    print(int(''.join(time_start.split('-'))))
+    if(int(''.join(time_start.split('-'))) > val or val > int(''.join(time_finish.split('-')))):
+        return jsonify({'result' : 'error', 'msg': '시작 날짜가 작거나 종료 날짜가 큽니다.'})
+>>>>>>> b007dab7ab8a9eb183093f44443c6484366a13bc
     else:
         db.register.update_one({'_id': ObjectId(transaction_id)}, {'$set': {
                                                                     'reserve_user': reserve_user,
@@ -243,7 +271,10 @@ def show_mypage():
     reserve_register = list(_reserve_register)
     return render_template("mypage.html",user_id=user_id, rent_register = rent_register , reserve_register = reserve_register)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> b007dab7ab8a9eb183093f44443c6484366a13bc
 @app.route('/cancle', methods=['POST'])
 def cancle_reservation():
     jwt_token = request.cookies.get('access_token')
@@ -333,9 +364,15 @@ def delete():
                 
         
         
+<<<<<<< HEAD
 # schdule = BackgroundScheduler(daemon =True, timezone ='Asia/Seoul')
 # schdule.add_job(delete, 'interval', hours=1)
 # schdule.start()
+=======
+schdule = BackgroundScheduler(daemon =True, timezone ='Asia/Seoul')
+schdule.add_job(delete, 'interval', hours=1)
+schdule.start()
+>>>>>>> b007dab7ab8a9eb183093f44443c6484366a13bc
 
 if __name__ == '__main__':  
    app.run('0.0.0.0', port=PORT, debug=True)
