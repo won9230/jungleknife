@@ -1,15 +1,15 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for
+#from apscheduler.schedulers.background import BackgroundScheduler
 import bcrypt
+from datetime import datetime
 from flask_jwt_extended import *
-from datetime import datetime, timedelta
-from flask_jwt_extended.config import config
 from jwt.exceptions import ExpiredSignatureError
 
 from Config import *
 
 from bson.objectid import ObjectId
 from pymongo import MongoClient
-client = MongoClient('localhost', 27017)
+client = MongoClient(MONGODB, 27017)
 db = client.jungleknife
 
 app = Flask(__name__)
@@ -74,13 +74,6 @@ def show_main():
     return render_template('main.html', user_id=user_id, all_register=all_register)
 
 
-@app.route("/main/<user_id>")
-def show_mypage(user_id):
-    return render_template("mypage.html", user_id)
-
-
-    
-
 ## 회원가입 페이지로 이동
 @app.route("/join")
 def show_join():
@@ -95,9 +88,6 @@ def show_register():
 @app.route("/rent")
 def show_rent():
     return render_template("rent.html")
-
-
-
 
 ################################
 ## API
@@ -213,15 +203,45 @@ def make_reservation():
     
     reserve_user = db.users.find_one({'id': user_id})['name']
     
-    db.register.update_one({'_id': ObjectId(transaction_id)}, {'$set': {
-                                                                'reserve_user': reserve_user,
-                                                                'reserve_place': reserve_place,
-                                                                'reserve_time': reserve_date+reserve_hour,
-                                                                'product_status': '예약 중'
-                                                            }
-                                                    })
+    time_start = db.register.find_one({'_id': ObjectId(transaction_id)})['time_start']
+    time_finish = db.register.find_one({'_id': ObjectId(transaction_id)})['time_finish']
     
-    return jsonify({'result' : 'success', 'msg': '예약 성공'})
+    print(time_start +' '+time_finish)
+    print(''.join(time_finish.split('-'))[:8])
+    if int(''.join(time_finish.split('-'))[:8]) < int(''.join(reserve_date.split('-'))):
+        return jsonify({'result' : 'error', 'msg': '종료 날짜가 더 큽니다.'})
+    if int(''.join(time_finish.split('-'))[:8]) == int(''.join(reserve_date.split('-'))) and int(''.join(time_finish.split('-'))[8:]) < int(reserve_hour):
+        return jsonify({'result' : 'error', 'msg': '종료 시간이 더 큽니다.'})
+    else:
+        db.register.update_one({'_id': ObjectId(transaction_id)}, {'$set': {
+                                                                    'reserve_user': reserve_user,
+                                                                    'reserve_place': reserve_place,
+                                                                    'reserve_time': reserve_date+reserve_hour,
+                                                                    'product_status': '예약 중'
+                                                                }
+                                                        })      
+        return jsonify({'result' : 'success', 'msg': '예약 성공'})
+    
+
+##마이페이지 정렬
+@app.route("/mypage")
+def show_mypage():
+    jwt_token = request.cookies.get('access_token')
+    if jwt_token is None:
+        return redirect(LOCALHOST+'/'), 400
+    
+    try:
+        user_id = decode_token(jwt_token).get(IDENTITY, None)
+    except ExpiredSignatureError:
+        # 쿠키 시간 만료의 경우, 로그인 페이지로
+        return redirect(LOCALHOST+'/'), 400
+    
+    user = db.users.find_one({'id': user_id})['name']
+    _rent_register = db.register.find({'rent_user' : user})
+    _reserve_register = db.register.find({'reserve_user' : user})
+    rent_register = list(_rent_register)
+    reserve_register = list(_reserve_register)
+    return render_template("mypage.html",user_id=user_id, rent_register = rent_register , reserve_register = reserve_register)
 
 
 @app.route('/cancle', methods=['POST'])
@@ -246,8 +266,76 @@ def cancle_reservation():
                                                                 'product_status': '구하는 중'
                                                             }
                                                     })
-    
+    print(db.register.find_one({'_id': ObjectId(transaction_id)}))
     return jsonify({'result' : 'success', 'msg': '예약 취소 성공'})
+
+## 반납
+@app.route('/return', methods=['POST'])
+def return_product():
+    jwt_token = request.cookies.get('access_token')
+    if jwt_token is None:
+        return redirect(LOCALHOST+'/'), 400
+    
+    try:
+        user_id = decode_token(jwt_token).get(IDENTITY, None)
+    except ExpiredSignatureError:
+        # 쿠키 시간 만료의 경우, 로그인 페이지로
+        return redirect(LOCALHOST+'/'), 400
+    
+    input_data = request.form
+    transaction_id = input_data['transaction_id']
+    
+    if(db.register.find_one({'_id': ObjectId(transaction_id)})['product_status'] == '대여 중'):
+        db.register.delete_one({'_id': ObjectId(transaction_id)})
+        return jsonify({'result' : 'success', 'msg': '반납 완료'})
+    else:
+        return jsonify({'result' : 'success', 'msg': '아직 물건을 받지 않았습니다.'})
+   
+
+## 대여
+@app.route('/rental', methods=['POST'])
+def rental_product():
+    jwt_token = request.cookies.get('access_token')
+    if jwt_token is None:
+        return redirect(LOCALHOST+'/'), 400
+    
+    try:
+        user_id = decode_token(jwt_token).get(IDENTITY, None)
+    except ExpiredSignatureError:
+        # 쿠키 시간 만료의 경우, 로그인 페이지로
+        return redirect(LOCALHOST+'/'), 400
+    
+    input_data = request.form
+    transaction_id = input_data['transaction_id']
+    
+    print()
+    if(db.register.find_one({'_id': ObjectId(transaction_id)})['product_status'] == '대여 중'):
+        return jsonify({'result' : 'success', 'msg': '이미 대여를 완료했습니다.'})
+    else: 
+        db.register.update_one({'_id': ObjectId(transaction_id)},{'$set':{'product_status':'대여 중'}})
+        return jsonify({'result' : 'success', 'msg': '대여 완료'})
+
+def delete():
+    print("삭제 중")
+    registers = list(db.register.find())
+    for reg in registers:
+        startTime = reg['time_start']
+        startDate = datetime.strptime(startTime[:10], "%Y-%m-%d").date()
+        
+        startHour = int(startTime[9:])
+        
+
+        if startDate < datetime.now().date():
+            db.register.delete_many({'time_start': startTime})
+        elif startDate == datetime.now().date():
+            if startHour <= datetime.now().hour:
+                db.register.delete_many({'time_start': startTime})
+                
+        
+        
+# schdule = BackgroundScheduler(daemon =True, timezone ='Asia/Seoul')
+# schdule.add_job(delete, 'interval', hours=1)
+# schdule.start()
 
 if __name__ == '__main__':  
    app.run('0.0.0.0', port=PORT, debug=True)

@@ -5,89 +5,259 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="/static/output.css" rel="stylesheet">
         <title>정글에서 나침반 빌리기</title>
-        <script src="../node_modules/flowbite/dist/flowbite.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+        <script>
+            $(document).ready(function(){
+                $(".reserveModal").each(function(index,item){
+                    $(item).attr('id', `reserveModal${index}`);
+                });
+                $(".reserveModalButton").each(function(index,item){
+                    $(item).attr('data-modal-target', `reserveModal${index}`);
+                    $(item).attr('data-modal-toggle', `reserveModal${index}`);
+                });
+                $(".reserveModalExit").each(function(index,item){
+                    $(item).attr('data-modal-hide', `reserveModal${index}`);
+                });
+            })
+
+            function Show_main()
+            {
+                window.location.href = '/main'
+            }
+
+            function cancle(transaction_id)
+            {
+                //let transaction_id = $("#transaction_id").text();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/cancle",
+                    data: {
+                        transaction_id: transaction_id,
+                    },
+                    success: function (res) { 
+                        if (res["result"] == "success") {
+                            alert("예약 취소되었습니다.");
+                            window.location.reload();
+                        } else {
+                            alert("서버 오류!");
+                        }
+                    }
+                });
+            }
+
+            function return_product(transaction_id)
+            {
+                //let transaction_id = $("#transaction_id").text();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/return",
+                    data: {
+                        transaction_id: transaction_id,
+                    },
+                    success: function (res) { 
+                        if (res["result"] == "success") {
+                            alert(res["msg"]);
+                            window.location.reload();
+                        } else {
+                            alert("서버 오류!");
+                        }
+                    }
+                });
+            }
+            function rental_product(transaction_id)
+            {
+                //let transaction_id = $("#transaction_id").text();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/rental",
+                    data: {
+                        transaction_id: transaction_id,
+                    },
+                    success: function (res) { 
+                        if (res["result"] == "success") {
+                            alert(res["msg"]);
+                            window.location.reload();
+                        } else {
+                            alert("서버 오류!");
+                        }
+                    }
+                });
+            }
+
+            function logout_process() {
+                $.ajax({
+                    type: "GET",
+                    url: "/logout",
+                    data: {},
+                    success: function(res) {
+                        alert(res['msg']);
+                        if (res['result'] == 'success') {
+                            window.location.href = '/'
+                        }
+                    }
+                })
+            }
+        </script>
     </head>
     <body>
-        <div id = "reserveModal" tabindex="-1" aria-hidden="true"  class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full">
-            
-            <div class="relative w-full h-full max-w-xl md:h-auto">
-                <div class="flex justify-between items-center w-full py-3 px-5 bg-white rounded-t-xl border-b-2">
-                    <div class="font-bold text-2xl">
-                        예약정보
-                    </div>
-                    <button type="button" class="text-gray-400 text-bold text-2xl bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="reserveModal">
-                        X
-                    </button>
-                </div>
-                <div class = "w-full h-full p-5 bg-white rounded-b-xl">
-                    <div class ="flex flex-col justify-start items-start">
-                        <div class ="font-bold mt-3">
-                            예약시간: <span>2023-01-03 12시</span>
-                        </div>
-                        <div class ="font-bold mt-5">
-                            예약장소: <span>place</span>
-                        </div>
-                        <div class ="font-bold mt-5 mb-3">
-                            대여자: <span>person</span>
-                        </div>
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
           <div class= "w-full flex justify-around items-center p-4 border-b-2">
-              <button class="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
-                   MyPage
-              </button>
-              <div>
-                  <h1 class="text-5xl font-bold inline-block">
-                      정글에서 <span class ="text-green-400">나침반</span> 빌리기
-                  </h1>
-              </div>
-              <button class ="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
-                  등록
+                <button onclick="Show_main()" class="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
+                    메인
                 </button>
+                <div class = "font-bold mx-3 px-3 py-1 rounded-lg">ID: {{ user_id }} </div>
+                <div>
+                    <h1 class="text-5xl font-bold inline-block">
+                        정글에서 <span class ="text-green-400">나침반</span> 빌리기
+                    </h1>
+                </div>
+                <button onclick="Show_main()" class="bg-white text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
+                <button onclick="logout_process();" class ="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
+                    로그아웃
+                </button>
+            </button>
             </div>
-            <div class="flex flex-wrap justify-around items-center p-4">
+            <div class="flex justify-around items-start p-4">
                 <div class="flex flex-col justify-center items-center w-[650px]">
                     <div class="font-bold text-3xl mt-5">
                         빌린 나침반
                     </div>
-                    <div class="flex flex-col justify-center items-center">
-                        <div class="bg-gray-200 w-[650px] mx-5 mt-5 p-3 rounded-lg">
-                            <div class="flex justify-start items-center p-4">
-                                <div class = "font-bold mx-3">대여물품:</div>
-                                <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">물걸레</div>
-                                <div class = "font-bold mx-3">이름:</div>
-                                <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">홍윤표</div>
-                            </div>
-                            <div class="flex justify-start items-center p-4">
-                                <div class = "font-bold mx-3">대여기간:</div>
-                                <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">2023.04.03 13:00 ~ 2023.04.03 15:00</div>
-                    </div>
-                    
-                    <div class="flex justify-start items-center p-4">
-                        <div class = "font-bold mx-3">사용목적:</div>
-                        <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">제가 재밌게놀면서 쓰고 싶습니다</div>
-                    </div>
-                    <div class="flex justify-between">
-                        <button data-modal-target="reserveModal" data-modal-toggle="reserveModal" class="text-gray-500 ml-2 font-bold">예약정보</button>
-                        <div class="flex justify-end">
-                            <div class="text-red-500 mr-2 font-bold">
-                                취소
-                            </div>
-                            <div class="text-green-300 mr-2 font-bold">
-                                대여 중
-                            </div>
-                        </div>
-                    </div>
+                    {%for i in rent_register%}
+                          <div id = "reserveModal" tabindex="-1" aria-hidden="true"  class="reserveModal fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full">
+                                      
+                              <div class="relative w-full h-full max-w-xl md:h-auto">
+                                  <div class="flex justify-between items-center w-full py-3 px-5 bg-white rounded-t-xl border-b-2">
+                                      <div class="font-bold text-2xl">
+                                          예약정보
+                                      </div>
+                                      <button type="button" class="reserveModalExit text-gray-400 text-bold text-2xl bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="reserveModal">
+                                          X
+                                      </button>
+                                  </div>
+                                  <div class = "w-full h-full p-5 bg-white rounded-b-xl">
+                                      <div class ="flex flex-col justify-start items-start">
+                                          <div class ="font-bold mt-3">
+                                              예약시간: <span>{{i['reserve_time'][:10]}} {{i['reserve_time'][10:]}}:00</span>
+                                          </div>
+                                          <div class ="font-bold mt-5">
+                                              예약장소: <span>{{i['reserve_place']}}</span>
+                                          </div>
+                                          <div class ="font-bold mt-5 mb-3">
+                                              빌려줄 사람: <span>{{i['reserve_user']}}</span>
+                                          </div>
+                                          
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <!---->
+                          <div class="bg-gray-200 w-[650px] mx-5 mt-5 p-3 rounded-lg">
+                              <div class="flex justify-start items-center p-4">
+                                <div id="{{i['_id']}}" style="display:none">{{i['_id']}}</div>
+                                  <div class = "font-bold mx-3">대여물품:</div>
+                                  <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">{{i['product']}}</div>
+                                  <div class = "font-bold mx-3">빌리고 싶은 사람:</div>
+                                  <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">{{i['rent_user']}}</div>
+                              </div>
+                              <div class="flex justify-start items-center p-4">
+                                  <div class = "font-bold mx-3">대여기간:</div>
+                                  <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">{{i['time_start'][:10]}} {{i['time_start'][10:]}}:00 ~ {{i['time_finish'][:10]}} {{i['time_finish'][10:]}}:00</div>
+                              </div>
+                          
+                          <div class="flex justify-start items-center p-4">
+                              <div class = "font-bold mx-3">사용목적:</div>
+                              <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">{{i['purpose_Rental']}}</div>
+                          </div>
+                          <div class="flex justify-between">
+                              <button data-modal-target="reserveModal" data-modal-toggle="reserveModal" class="reserveModalButton text-gray-500 ml-2 font-bold">예약정보</button>
+                              <div class="flex justify-end">
+                                <div onclick='rental_product("{{i['_id']}}")' class="text-blue-400 mr-2 font-bold">
+                                    물건을 받았나요?
+                                </div>
+                                <div onclick='return_product("{{i['_id']}}")' class="text-red-500 mr-2 font-bold">
+                                    반납했나요?
+                                </div>
+                                  <div onclick='cancle("{{i['_id']}}")' class="text-red-500 mr-2 font-bold">
+                                      취소
+                                  </div>
+                                  <div class="text-green-300 mr-2 font-bold">
+                                      {{i['product_status']}}
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                    {%endfor%}
                 </div>
-            </div>
-            <div class="flex flex-col justify-center items-center w-[650px]">
+
+
+     
+        <div class="flex flex-col justify-center items-center w-[650px]">
                 <div class="font-bold text-3xl mt-5">
                     빌려준 나침반
                 </div>
-            </div>
+                {%for i in reserve_register%}
+                      <div id = "reserveModal" tabindex="-1" aria-hidden="true"  class="reserveModal fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full">
+                                  
+                          <div class="relative w-full h-full max-w-xl md:h-auto">
+                              <div class="flex justify-between items-center w-full py-3 px-5 bg-white rounded-t-xl border-b-2">
+                                  <div class="font-bold text-2xl">
+                                      예약정보
+                                  </div>
+                                  <button type="button" class="reserveModalExit text-gray-400 text-bold text-2xl bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="reserveModal">
+                                      X
+                                  </button>
+                              </div>
+                              <div class = "w-full h-full p-5 bg-white rounded-b-xl">
+                                  <div class ="flex flex-col justify-start items-start">
+                                      <div class ="font-bold mt-3">
+                                          예약시간: <span>{{i['reserve_time'][:10]}} {{i['reserve_time'][10:]}}:00</span>
+                                      </div>
+                                      <div class ="font-bold mt-5">
+                                          예약장소: <span>{{i['reserve_place']}}</span>
+                                      </div>
+                                      <div class ="font-bold mt-5 mb-3">
+                                          빌려줄 사람: <span>{{i['reserve_user']}}</span>
+                                      </div>
+                                      
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <!---->
+                      <div class="bg-gray-200 w-[650px] mx-5 mt-5 p-3 rounded-lg">
+                        <div id="{{i['_id']}}" style="display:none">{{i['_id']}}</div>
+                          <div class="flex justify-start items-center p-4">
+                              <div class = "font-bold mx-3">대여물품:</div>
+                              <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">{{i['product']}}</div>
+                              <div class = "font-bold mx-3">빌리고 싶은 사람:</div>
+                              <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">{{i['rent_user']}}</div>
+                          </div>
+                          <div class="flex justify-start items-center p-4">
+                              <div class = "font-bold mx-3">대여기간:</div>
+                              <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">{{i['time_start'][:10]}} {{i['time_start'][10:]}}:00 ~ {{i['time_finish'][:10]}} {{i['time_finish'][10:]}}:00</div>
+                          </div>
+                      
+                      <div class="flex justify-start items-center p-4">
+                          <div class = "font-bold mx-3">사용목적:</div>
+                          <div class = "font-bold mx-3 px-3 py-1 bg-white rounded-lg">{{i['purpose_Rental']}}</div>
+                      </div>
+                      <div class="flex justify-between">
+                          <button data-modal-target="reserveModal" data-modal-toggle="reserveModal" class="reserveModalButton text-gray-500 ml-2 font-bold">예약정보</button>
+                          <div class="flex justify-end">
+                              <div onclick='cancle("{{i['_id']}}")' class="text-red-500 mr-2 font-bold">
+                                  취소
+                              </div>
+                              <div class="text-green-300 mr-2 font-bold">
+                                  {{i['product_status']}}
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                {%endfor%}
         </div>
 </body>
 </html>

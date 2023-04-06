@@ -11,42 +11,6 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
     
     <script>
-        function registerProduct() {
-            let product_name = $("#product_name").val();
-            let start_day = $("#start_day").val();
-            let start_hour = $("#start_hour").val();
-            let end_day = $("#end_day").val();
-            let end_hour = $("#end_hour").val();
-            let purpose = $("#purpose").val();
-
-            if (product_name == '' || purpose == '') {
-                alert("빈칸을 채워주세요.");
-                return;
-            }
-
-            $.ajax({
-                type: "POST",
-                url: "/register/product",
-                data: {
-                    product_name: product_name,
-                    start_day: start_day,
-                    start_hour: start_hour,
-                    end_day: end_day,
-                    end_hour: end_hour,
-                    purpose: purpose
-                },
-                success: function(res) {
-                    console.log(res);
-                    if (res['result'] == 'success') {
-                        console.log("물건 등록 성공");
-                    }
-                    else {
-                        alert(res['msg']);
-                    }
-                }
-            });
-        }
-
         function logout_process() {
             $.ajax({
                 type: "GET",
@@ -97,7 +61,10 @@
             });
         }
 
-        
+        function Show_mypage()
+        {
+            window.location.href = '/mypage';
+        }
 
         $(document).ready(function(){
             $(".rentModal").each(function(index,item){
@@ -164,10 +131,10 @@
     
     <!--navBar start-->
     <div class= "w-full flex justify-around items-center p-4 border-b-2">
-        <button class="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
+        <button onclick="Show_mypage()"class="bg-green-400 text-white rounded-lg w-20 h-8 leading-8 text-center hover:opacity-80">
              MyPage
         </button>
-        <div class = "font-bold mx-3 px-3 py-1 rounded-lg">{{ user_id }} </div>
+        <div class = "font-bold mx-3 px-3 py-1 rounded-lg">ID: {{ user_id }} </div>
         <div>
             <h1 class="text-5xl font-bold inline-block">
                 정글에서 <span class ="text-green-400">나침반</span> 빌리기
